@@ -1,0 +1,47 @@
+# .NET Core ve .NET 5+ ile ilgili dosyalar
+.vscode/
+.idea/
+bin/
+obj/
+
+# Kullanıcı tarafından oluşturulan dosyalar
+# (Visual Studio, JetBrains Rider veya başka IDE'ler için)
+.vs/
+.vs2019/
+.vs2017/
+.DS_Store
+Thumbs.db
+
+# Paket yöneticisi dosyaları
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Azure ve diğer bulut servislerine dair dosyalar
+.local/
+
+# .NET test verileri ve raporları
+coverage/
+
+# Farklı IDE ve editörlere dair geçici dosyalar
+# JetBrains Rider için
+.idea/
+
+# Visual Studio Code ayarları
+.vscode/
+
+# ASP.NET Core runtime'tan kaynaklanan geçici dosyalar
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# .NET Core publish edilmiş dosyalar
+publish/
+
+# Kullanıcı önbellek dosyaları
+.nuget/
+# Windows geçici dosyalar
+# Bu dosyalar .gitignore'a eklenebilir ama genelde kullanıcıya özel olduğu için dışlanır
+*.swp
