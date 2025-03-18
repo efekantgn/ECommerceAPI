@@ -20,19 +20,22 @@ namespace AuthService.Controllers
         private readonly IConfiguration _configuration;
         private readonly AuthDbContext _dbContext;
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+        private readonly IServiceProvider _serviceProvider;
 
         public AuthController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IConfiguration configuration,
             AuthDbContext authDbContext,
-            RoleManager<IdentityRole<Guid>> roleManager)
+            RoleManager<IdentityRole<Guid>> roleManager,
+            IServiceProvider serviceProvider)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _dbContext = authDbContext;
             _roleManager = roleManager;
+            _serviceProvider = serviceProvider;
         }
 
         [HttpPost("register")]
@@ -121,16 +124,20 @@ namespace AuthService.Controllers
 
         private void SaveRefreshToken(Guid userId, string refreshToken)
         {
-
-            var token = new RefreshToken
+            using (var scope = _serviceProvider.CreateScope()) // Yeni bir scope oluştur
             {
-                Token = refreshToken,
-                ExpiryDate = DateTime.UtcNow.AddDays(7),  // Refresh token geçerlilik süresi (örneğin 7 gün)
-                UserId = userId
-            };
+                var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
 
-            _dbContext.RefreshTokens.Add(token);
-            _dbContext.SaveChanges();
+                var token = new RefreshToken
+                {
+                    Token = refreshToken,
+                    ExpiryDate = DateTime.UtcNow.AddDays(7),  // Refresh token geçerlilik süresi (örneğin 7 gün)
+                    UserId = userId
+                };
+
+                dbContext.RefreshTokens.Add(token);
+                dbContext.SaveChanges();
+            }
         }
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
