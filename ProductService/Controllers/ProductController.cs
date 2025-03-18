@@ -52,24 +52,19 @@ namespace ProductService.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(Guid id, Product updatedProduct)
         {
-            if (id != updatedProduct.Id)
-                return BadRequest();
-
-            _context.Entry(updatedProduct).State = EntityState.Modified;
-
-            try
+            var product = _context.Products.Find(id);
+            if (product == null)
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Products.Any(e => e.Id == id))
-                    return NotFound();
-                else
-                    throw;
-            }
+            product.Name = updatedProduct.Name;
+            product.Price = updatedProduct.Price;
+            product.Stock = updatedProduct.Stock;
 
-            return NoContent();
+            await _context.SaveChangesAsync();
+
+
+            return Ok(product);
         }
 
         // ✅ DELETE: api/product/{id} - Ürünü sil
