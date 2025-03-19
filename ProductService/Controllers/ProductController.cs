@@ -8,7 +8,6 @@ namespace ProductService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")] // Tüm işlemler için JWT gereksin
     public class ProductController : ControllerBase
     {
         private readonly ProductDbContext _context;
@@ -79,6 +78,22 @@ namespace ProductService.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpPut("update-stock")]
+        public async Task<IActionResult> UpdateStock([FromBody] UpdateStockRequest request)
+        {
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == request.ProductId); ;
+            if (product == null)
+                return NotFound("Product not found");
+
+            if (product.Stock < request.Quantity)
+                return BadRequest("Not enough stock available");
+
+            product.Stock -= request.Quantity; // Stok düş
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Stock updated successfully" });
         }
     }
 }

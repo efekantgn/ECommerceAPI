@@ -1,6 +1,6 @@
 
-@username = admin0
-@password = Admin123.
+@username = efekan
+@password = Efekan123.
 @email = admin0@gmail.com
 @role = Admin
 @token = {{postLogin.response.body.jwtToken.result}}
@@ -115,7 +115,7 @@ Accept: application/json
 
 ### Assign orderId and userId from the response
 @orderId={{getOrder.response.body.id}}
-@userId={{getOrder.response.body.userId}}
+@userId=26dfe646-0695-405b-84f7-eadb3f53f226
 
 ### Create a new order
 POST {{baseUrl}}/Order
@@ -126,13 +126,13 @@ Content-Type: application/json
   "userId": "{{userId}}",
   "orderItems": [
     {
-      "productId": "product-uuid-1",
-      "quantity": 2,
+      "productId": "719666af-c284-4880-aedf-49c87d68bc86",
+      "quantity": 1,
       "price": 19.99
     },
     {
-      "productId": "product-uuid-2",
-      "quantity": 1,
+      "productId": "efdaff44-5b8d-4720-9700-8bbb37071ba5",
+      "quantity": 50,
       "price": 49.99
     }
   ]

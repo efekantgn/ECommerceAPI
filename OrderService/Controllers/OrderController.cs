@@ -4,6 +4,8 @@ using OrderService.Data;
 using OrderService.Models;
 using OrderService.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 namespace OrderService.Controllers
 {
@@ -13,10 +15,12 @@ namespace OrderService.Controllers
     public class OrderController : ControllerBase
     {
         private readonly OrderDbContext _context;
+        private readonly HttpClient _httpClient;
 
-        public OrderController(OrderDbContext context)
+        public OrderController(OrderDbContext context, HttpClient httpClient)
         {
             _context = context;
+            _httpClient = httpClient;
         }
 
         // ✅ Tüm siparişleri getir
@@ -75,6 +79,12 @@ namespace OrderService.Controllers
         [HttpPost]
         public async Task<ActionResult<OrderResponseDto>> CreateOrder(OrderRequestDto orderRequest)
         {
+            foreach (var item in orderRequest.OrderItems)
+            {
+                var stockUpdated = await DeductStockAsync(item.ProductId, item.Quantity);
+                if (!stockUpdated)
+                    return BadRequest($"Insufficient stock for product {item.ProductId}");
+            }
             var order = new Order
             {
                 Id = Guid.NewGuid(),
@@ -168,6 +178,23 @@ namespace OrderService.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        public async Task<bool> DeductStockAsync(Guid productId, int quantity)
+        {
+            var updateStockRequest = new UpdateStockRequest
+            {
+                ProductId = productId,
+                Quantity = quantity
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Put, "http://localhost:5151/product/update-stock")
+            {
+                Content = JsonContent.Create(updateStockRequest)
+            };
+
+            var response = await _httpClient.SendAsync(request);
+            return response.IsSuccessStatusCode;
         }
     }
 }

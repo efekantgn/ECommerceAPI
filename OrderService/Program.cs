@@ -29,7 +29,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
-
+// Add HttpClient to the service collection
+builder.Services.AddHttpClient();
 // 🔹 Controller’ları ekleyelim
 builder.Services.AddControllers();
 
