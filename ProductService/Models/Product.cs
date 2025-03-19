@@ -18,5 +18,8 @@ namespace ProductService.Models
 
         [Required]
         public required int Stock { get; set; }
+
+        public string Category { get; set; } // Yeni alan
+        public List<string> Tags { get; set; } // Yeni alan
     }
 }

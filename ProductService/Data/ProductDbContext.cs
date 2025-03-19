@@ -8,5 +8,11 @@ namespace ProductService.Data
         public ProductDbContext(DbContextOptions<ProductDbContext> options) : base(options) { }
 
         public DbSet<Product> Products { get; set; }
+        public DbSet<Review> Reviews { get; set; } // Reviews DbSet'i eklendi
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

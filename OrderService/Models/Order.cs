@@ -18,5 +18,7 @@ namespace OrderService.Models
         public decimal TotalPrice { get; set; } // Toplam fiyat
 
         public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+
+        public string Status { get; set; } // Yeni alan
     }
 }

@@ -38,6 +38,7 @@ namespace ProductService.Controllers
 
         // ✅ POST: api/product - Yeni ürün oluştur
         [HttpPost]
+        [Authorize(Roles = "Admin")] // Sadece Admin rolüne sahip kullanıcılar erişebilir
         public async Task<ActionResult<Product>> CreateProduct(Product product)
         {
             product.Id = Guid.NewGuid(); // GUID ID oluştur
@@ -51,17 +52,17 @@ namespace ProductService.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(Guid id, Product updatedProduct)
         {
-            var product = _context.Products.Find(id);
+            var product = await _context.Products.FindAsync(id);
             if (product == null)
-            {
                 return NotFound();
-            }
+
             product.Name = updatedProduct.Name;
             product.Price = updatedProduct.Price;
             product.Stock = updatedProduct.Stock;
+            product.Category = updatedProduct.Category; // Yeni alan
+            product.Tags = updatedProduct.Tags; // Yeni alan
 
             await _context.SaveChangesAsync();
-
 
             return Ok(product);
         }
@@ -94,6 +95,24 @@ namespace ProductService.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Stock updated successfully" });
+        }
+
+        [HttpPost("{productId}/reviews")]
+        public async Task<IActionResult> AddReview(Guid productId, Review review)
+        {
+            review.Id = Guid.NewGuid();
+            review.ProductId = productId;
+            _context.Reviews.Add(review);
+            await _context.SaveChangesAsync();
+
+            return Ok(review);
+        }
+
+        [HttpGet("{productId}/reviews")]
+        public async Task<ActionResult<IEnumerable<Review>>> GetReviews(Guid productId)
+        {
+            var reviews = await _context.Reviews.Where(r => r.ProductId == productId).ToListAsync();
+            return Ok(reviews);
         }
     }
 }

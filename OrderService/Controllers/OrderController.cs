@@ -35,6 +35,7 @@ namespace OrderService.Controllers
                     UserId = o.UserId,
                     OrderDate = o.OrderDate,
                     TotalPrice = o.TotalPrice,
+                    Status = o.Status,
                     OrderItems = o.OrderItems.Select(oi => new OrderItemDto
                     {
                         ProductId = oi.ProductId,
@@ -60,6 +61,7 @@ namespace OrderService.Controllers
                     UserId = o.UserId,
                     OrderDate = o.OrderDate,
                     TotalPrice = o.TotalPrice,
+                    Status = o.Status,
                     OrderItems = o.OrderItems.Select(oi => new OrderItemDto
                     {
                         ProductId = oi.ProductId,
@@ -90,6 +92,7 @@ namespace OrderService.Controllers
                 Id = Guid.NewGuid(),
                 UserId = orderRequest.UserId,
                 OrderDate = DateTime.UtcNow,
+                Status = "Pending",
                 OrderItems = orderRequest.OrderItems.Select(oi => new OrderItem
                 {
                     Id = Guid.NewGuid(),
@@ -110,6 +113,7 @@ namespace OrderService.Controllers
                 UserId = order.UserId,
                 OrderDate = order.OrderDate,
                 TotalPrice = order.TotalPrice,
+                Status = order.Status,
                 OrderItems = order.OrderItems.Select(oi => new OrderItemDto
                 {
                     ProductId = oi.ProductId,
@@ -154,12 +158,12 @@ namespace OrderService.Controllers
                     });
                 }
             }
+            existingOrder.Status = orderUpdate.Status;
 
             // OrderItem'ların toplam fiyatını güncelle
             existingOrder.TotalPrice = existingOrder.OrderItems.Sum(item => item.Price * item.Quantity);
+            _context.Orders.Update(existingOrder);
 
-            // Siparişi güncelle
-            _context.Entry(existingOrder).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -178,6 +182,48 @@ namespace OrderService.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateOrderStatus(Guid id, string status)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
+                return NotFound();
+
+            order.Status = status;
+            order.OrderDate = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return Ok(order);
+        }
+
+        [HttpPost("{id}/cancel")]
+        public async Task<IActionResult> CancelOrder(Guid id)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
+                return NotFound();
+
+            order.Status = "Cancelled";
+            order.OrderDate = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return Ok(order);
+        }
+
+        [HttpPost("{id}/return")]
+        public async Task<IActionResult> ReturnOrder(Guid id)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
+                return NotFound();
+
+            order.Status = "Returned";
+            order.OrderDate = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return Ok(order);
         }
 
         public async Task<bool> DeductStockAsync(Guid productId, int quantity)

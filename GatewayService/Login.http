@@ -1,7 +1,6 @@
-
-@username = efekan
-@password = Efekan123.
-@email = admin0@gmail.com
+@username = Admin
+@password = Admin123.
+@email = Admin@example.com
 @role = Admin
 @token = {{postLogin.response.body.jwtToken.result}}
 @refreshToken = {{postLogin.response.body.refreshToken}}
@@ -59,14 +58,25 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "username": "efekan",
-  "email": "updatedemail@example.com",
+  "username": "Admin",
+  "email": "Admin@example.com",
   "address": "New Address"
 }
 
 ### Get admin information
 GET {{baseUrl}}/auth/admin HTTP/1.1
 Authorization: Bearer {{token}}
+
+### Reset password
+POST {{baseUrl}}/auth/reset-password HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "token": "reset_token_here",
+  "password": "NewPassword123!"
+}
+
 
 ### Fetch all products
 GET {{baseUrl}}/Product
@@ -81,12 +91,13 @@ Content-Type: application/json
 {
   "name": "New Product",
   "price": 19.99,
-  "stock": 100
+  "stock": 100,
+  "category": "Electronics",
+  "tags": ["New", "Sale"]
 }
 
-###
-@productId=
 ### Fetch a product by ID
+@productId=44da3d1b-311c-4af7-822f-3623bc5dd2f9
 GET {{baseUrl}}/Product/{{productId}}
 Authorization: Bearer {{token}}
 Accept: application/json
@@ -97,15 +108,34 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "name": "Product",
-  "price": 2.99,
-  "stock": 1500
+  "name": "TV",
+  "price": 2900.99,
+  "stock": 150,
+  "category": "Television",
+  "tags": ["LCD", "Smart", "Wifi"]
 }
 
 ### Delete a product by ID
 DELETE {{baseUrl}}/Product/{{productId}}
 Authorization: Bearer {{token}}
 Accept: application/json
+
+
+//Patladı çünkü rewiews tablosu yok dbde
+### Add a review to a product
+POST {{baseUrl}}/Product/{{productId}}/reviews
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": "B0CBC4F5-3C78-4847-87B5-C4509AF84DC1",
+  "comment": "Great product!",
+  "rating": 5
+}
+
+### Get reviews for a product
+GET {{baseUrl}}/Product/{{productId}}/reviews
+Authorization: Bearer {{token}}
 
 ### Fetch all orders
 # @name getOrder
@@ -114,7 +144,7 @@ Authorization: Bearer {{token}}
 Accept: application/json
 
 ### Assign orderId and userId from the response
-@orderId={{getOrder.response.body.id}}
+@orderId=e0185f86-034e-4dc6-a522-53d1aaeccb4f
 @userId=26dfe646-0695-405b-84f7-eadb3f53f226
 
 ### Create a new order
@@ -132,10 +162,12 @@ Content-Type: application/json
     },
     {
       "productId": "efdaff44-5b8d-4720-9700-8bbb37071ba5",
-      "quantity": 50,
+      "quantity": 5,
       "price": 49.99
     }
-  ]
+  ],
+  "totalPrice": 2499.50,
+  "status": "Pending"
 }
 
 ### Fetch an order by ID
@@ -149,15 +181,30 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "userId": "updated-user-uuid",
+  "userId": "{{userId}}",
   "orderItems": [
     {
-      "productId": "updated-product-uuid-1",
-      "quantity": 3,
-      "price": 29.99
+      "productId": "719666af-c284-4880-aedf-49c87d68bc86",
+      "quantity": 1,
+      "price": 19.99
+    },
+    {
+      "productId": "efdaff44-5b8d-4720-9700-8bbb37071ba5",
+      "quantity": 5,
+      "price": 49.99
     }
-  ]
+  ],
+  "totalPrice": 2499.50,
+  "status": "Shipped"
 }
+
+### Cancel an order
+POST {{baseUrl}}/Order/{{orderId}}/cancel
+Authorization: Bearer {{token}}
+
+### Return an order
+POST {{baseUrl}}/Order/{{orderId}}/return
+Authorization: Bearer {{token}}
 
 ### Delete an order by ID
 DELETE {{baseUrl}}/Order/{{orderId}}

@@ -11,5 +11,8 @@ namespace OrderService.DTOs
 
         [Required]
         public required List<OrderItemDto> OrderItems { get; set; } // Sipariş ürünleri
+
+        [Required]
+        public required string Status { get; set; }
     }
 }

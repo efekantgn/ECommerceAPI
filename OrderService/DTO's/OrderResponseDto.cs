@@ -9,6 +9,7 @@ namespace OrderService.DTOs
         public Guid UserId { get; set; } // Kullanıcı ID
         public DateTime OrderDate { get; set; } // Sipariş tarihi
         public decimal TotalPrice { get; set; } // Toplam fiyat
+        public required string Status { get; set; } // Sipariş durumu
         public required List<OrderItemDto> OrderItems { get; set; } // Sipariş edilen ürünler
     }
 }

@@ -12,10 +12,16 @@ namespace OrderService.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Order>()
+                .Property(o => o.Status)
+                .IsRequired();
+
             modelBuilder.Entity<OrderItem>()
-                .HasOne(o => o.Order)
-                .WithMany(oi => oi.OrderItems)
+                .HasOne(oi => oi.Order)
+                .WithMany(o => o.OrderItems)
                 .HasForeignKey(oi => oi.OrderId);
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

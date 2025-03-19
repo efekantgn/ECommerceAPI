@@ -237,9 +237,23 @@ namespace AuthService.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet("admin")]
-        public IActionResult AuthorizedAdmin()
+        public IActionResult GetAdminInfo()
         {
-            return Ok(new { message = "Authorized" });
+            return Ok("This is admin information.");
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+                return NotFound("User not found");
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            if (result.Succeeded)
+                return Ok("Password reset successful");
+
+            return BadRequest(result.Errors);
         }
 
     }
