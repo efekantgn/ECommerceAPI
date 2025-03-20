@@ -85,4 +85,4 @@ Bu proje MIT Lisansı ile lisanslanmıştır. Daha fazla bilgi için `LICENSE` d
 
 ### İletişim
 
-Herhangi bir sorunuz veya geri bildiriminiz varsa, lütfen [email@example.com](mailto:email@example.com) adresinden benimle iletişime geçin.
+Herhangi bir sorunuz veya geri bildiriminiz varsa, lütfen [email@example.com](mailto:efekantgn@gmail.com) adresinden benimle iletişime geçin.
